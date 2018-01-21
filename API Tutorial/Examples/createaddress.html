@@ -1,0 +1,172 @@
+<html style='height:100%'>
+<head>
+	<title>ERA Create Adderss</title>
+	<script src="./lib/jquery-2.2.0.js"></script>
+	<script src="./lib/nacl-fast.js" charset="utf-8"></script>
+	<script src="./lib/Base58.js" charset="utf-8"></script>
+	<script src="./lib/sha256.js" charset="utf-8"></script>
+	<script src="./lib/ripemd160.js" charset="utf-8"></script>
+	<script src="./lib/eralib.js" charset="utf-8"></script>
+	<script src="./lib/common.js" charset="utf-8"></script>
+	<link href="bootstrap.css" rel="stylesheet">
+	<link href="common.css" rel="stylesheet">
+</head>
+
+<script type="text/javascript">
+
+	function doAccountAddressFromPublicKey() {
+	
+		var base58AccountPublicKey = document.getElementById('base58AccountPublicKey').value;
+		
+		if(Base58.decode(base58AccountPublicKey).length != 32) {
+			document.getElementById('base58AccountAddress').value = '';
+			alert("invalid PublicKey!");
+			return;
+		}
+		
+		var base58AccountAddress = getAccountAddressFromPublicKey(base58AccountPublicKey);
+		document.getElementById('base58AccountAddress').value = base58AccountAddress;
+	}
+
+	function doBrain()
+	{
+		var brainWalletPassphrase = document.getElementById('brainWalletPassphrase').value;
+		
+		if(brainWalletPassphrase.length < 8) {
+			document.getElementById('base58BaseSeed').value = '';
+			document.getElementById('output').innerHTML = '';
+			alert("invalid passphrase length!\nIt should be at least 8 characters.");
+			return;
+		}
+		
+		var byteSeed = new Uint8Array(SHA256.digest(SHA256.digest(brainWalletPassphrase)));
+		var base58BaseSeed = Base58.encode(byteSeed);
+		
+		document.getElementById('base58BaseSeed').value = base58BaseSeed;
+		
+		doAccounts();
+	}
+	
+	function doAccountFromSeed(base58AccountSeed) 
+	{
+		if(base58AccountSeed) {
+			document.getElementById('base58AccountSeed').value = base58AccountSeed;
+		} else {
+			base58AccountSeed = document.getElementById('base58AccountSeed').value;
+		}
+		
+		if(Base58.decode(base58AccountSeed).length != 32) {
+			document.getElementById('base58AccountPublicKey').value = '';
+			document.getElementById('base58AccountPrivateKey').value = '';
+			document.getElementById('base58AccountAddress').value = '';
+			alert("invalid seed!");
+			return;
+		}
+		
+		keyPair = getKeyPairFromSeed(base58AccountSeed, false);
+		
+		var base58AccountAddress = getAccountAddressFromPublicKey(keyPair.publicKey);
+		
+		var base58AccountPublicKey = Base58.encode(keyPair.publicKey);
+		var base58AccountPrivateKey = Base58.encode(keyPair.privateKey);
+		
+		document.getElementById('base58AccountPublicKey').value = base58AccountPublicKey;
+		document.getElementById('base58AccountPrivateKey').value = base58AccountPrivateKey;
+		document.getElementById('base58AccountAddress').value = base58AccountAddress;
+	}
+	
+	function doAccounts(){
+
+		var base58BaseSeed = document.getElementById('base58BaseSeed').value;
+
+		document.getElementById('output').innerHTML = '';
+		
+		if(base58BaseSeed == '') {
+			return;
+		}
+		
+		
+		countAddrs = document.getElementById('countAddrs').value;
+
+		if(isNaN(countAddrs) || countAddrs < 1) {
+			alert("invalid count!");
+			return;
+		}
+
+		seed = Base58.decode(base58BaseSeed);
+	
+		if(seed.length != 32) {
+			alert("invalid seed!");
+			return;
+		}
+		
+		for (var nonce = 0; nonce < countAddrs; nonce ++) {
+			var accountSeed = generateAccountSeed(seed, nonce, false);
+			var keyPair = getKeyPairFromSeed(accountSeed);
+			var base58addressSeed = Base58.encode(accountSeed);
+			
+			document.getElementById('output').innerHTML += '<hr><span style="cursor: pointer;" onclick="doAccountFromSeed(\''+base58addressSeed+'\')">' 
+			+ '' + (nonce+1) + ' '
+			+ 'Address: <b>' + getAccountAddressFromPublicKey(keyPair.publicKey) + '</b><br>'
+			+ 'Account Seed: ' + base58addressSeed + ' '
+			+ '</span>';
+		}
+	}
+	
+	function onLoad()
+	{
+		if (/test/.test(window.location.hash)) 
+		{
+			$("#brainWalletPassphrase").val("sdfsdfsretgdsy5yygu7it756456eydgdfgeyfyjhl");
+			$("#doBrainButton").click();
+			if($("#base58BaseSeed").val() == 'CjCmqGrNJoy499fMFGmonRipBc4GKk9RGRHF4BY7XSBN') {
+				$("#base58BaseSeed").css({"color": "green"});
+			} else {
+				$("#base58BaseSeed").css({"color": "red"});
+			}
+			
+			$("#base58AccountSeed").val("8stsVtM4gQsJbvVbDx1eszkd5zUWEtt6tmUwYBB4PmA3");
+			$("#doAccountFromSeedButton").click();
+
+			if($("#base58AccountAddress").val() == 'QMBKyCtSjjNETmNLQwfCxd6sADJNVXAShk') {
+			$("#base58AccountAddress").css({"color": "green"});
+			} else {
+				$("#base58AccountAddress").css({"color": "red"});
+			}
+		}
+	}
+	
+	
+</script>
+<body style="margin:4; padding:25" onload="onLoad()">
+	
+	<center>
+	<div style='height: 140px;' id='menu'></div>
+	<h3>SEED & Generate Key Pair & issue Addresses</h3>
+	<table>
+	<tr><td>
+	Enter string (min 8 Characters):<br>
+	<input style='width:485px;' type="text" size=60 value="" autofocus id="brainWalletPassphrase"/><input style='width:80px;' type="button" id='doBrainButton' value="Convert" OnClick="doBrain()"/><br><br>
+
+	Base Seed:<br>
+	<input style='width:485px;' type="text" size=60 value="" id="base58BaseSeed"/><input style='width:80px;' type="button" value="Convert" OnClick="doAccounts()"/><br><br>
+	Addresses Count: <input type="text" size=5 value="10" id="countAddrs"/><br>
+	<br>
+	<div id="output"></div><br>
+
+	<b>Full Account info:</b><br>
+    <span style='width:80px; display: inline-block;'>Account Seed:</span> <input style='width:400px;' type="text" value="" id="base58AccountSeed"/><input style='width:80px;' type="button" id='doAccountFromSeedButton' value="Convert" OnClick="doAccountFromSeed()"/><br>
+
+    <span style='width:80px; display: inline-block;'>privateKey:</span>
+	<input style='width:480px;' type="text" class="readonly" value="" readonly id="base58AccountPrivateKey"/><br>
+
+	<span style='width:80px; display: inline-block;'>publicKey:</span> 
+	<input style='width:400px;'  type="text" value="" id="base58AccountPublicKey"/><input  style='width:80px;' type="button" value="Convert" OnClick="doAccountAddressFromPublicKey()"/><br>
+	<span style='width:80px; display: inline-block;'>Address:</span>
+    <input style='width:480px;' type="text" class="readonly" value="" readonly id="base58AccountAddress"/><br>
+	</table>
+	<br><br>
+	<div id='bottom'></div>
+	</center>
+</body>
+	

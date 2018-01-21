@@ -1,0 +1,205 @@
+﻿<html style='height:100%'>
+<head>
+	<title>ERA Issue Asset</title>
+	<script src="./lib/jquery-2.2.0.js"></script>
+	<script src="./lib/nacl-fast.js" charset="utf-8"></script>
+	<script src="./lib/Base58.js" charset="utf-8"></script>
+	<script src="./lib/sha256.js" charset="utf-8"></script>
+	<script src="./lib/ripemd160.js" charset="utf-8"></script>
+	<script src="./lib/eralib.js" charset="utf-8"></script>
+	<script src="./lib/common.js" charset="utf-8"></script>
+	<link href="bootstrap.css" rel="stylesheet">
+	<link href="common.css" rel="stylesheet">
+</head>
+
+<style>
+
+</style>
+
+<script type="text/javascript">
+
+	var casheBase58addressSeed = '';
+	var casheBase58SenderAccountAddress = '';
+	var casheBase58RecipientAccountAddress = '';
+	var casheTimestamp = '';
+	var casheFee = '';
+	var casheAmount = '';
+	 var imagebyte = '';
+	 
+	
+	function doUpdate() 
+	{
+		var base58addressSeed = $('#base58SenderAccountSeed').val();
+
+		if ((base58addressSeed != '') && (casheBase58addressSeed != base58addressSeed)) {
+			casheBase58addressSeed = base58addressSeed;
+			if (Base58.decode(base58addressSeed).length == 32) {
+				keyPair = getKeyPairFromSeed(base58addressSeed, false);
+				
+				var base58SenderAccountAddress = getAccountAddressFromPublicKey(keyPair.publicKey);
+				
+				$('#base58SenderAccountAddress').val(base58SenderAccountAddress);	
+				
+			} else {
+				$('#base58SenderAccountAddress').val('');
+			}
+		
+		}
+		
+		var base58SenderAccountAddress = $('#base58SenderAccountAddress').val();
+
+		if ((base58SenderAccountAddress != '') && (casheBase58SenderAccountAddress != base58SenderAccountAddress)) {
+			casheBase58SenderAccountAddress = base58SenderAccountAddress;
+			doLoadBalance(base58SenderAccountAddress, $('#senderBalance'));
+		}
+		
+		var base58RecipientAccountAddress = $('#base58RecipientAccountAddress').val();
+
+		if ((base58RecipientAccountAddress != '') && (casheBase58RecipientAccountAddress != base58RecipientAccountAddress)) {
+			casheBase58RecipientAccountAddress = base58RecipientAccountAddress;
+			doLoadBalance(base58RecipientAccountAddress, $('#recipientBalance'));
+		}
+		
+		var timestamp = $('#timestamp').val();
+				
+		if (!(timestamp == '' || casheTimestamp == timestamp)) {
+			casheTimestamp = timestamp;
+			
+			if (! isNaN(casheTimestamp)) {
+
+				var date = new Date(parseInt(casheTimestamp));
+				$('#datetime').val(date.toLocaleDateString() + ' ' + date.toLocaleTimeString());
+				
+			} else {
+				$('#datetime').val('');
+			}
+		}
+		
+		if($('#fee').val() != casheFee) {
+			var caretPosition = getTextCursorPosition($('#fee'))
+			var removeCommasBuf = removeAllexceptDotAndNumbers($('#fee').val());
+			if(removeCommasBuf != $('#fee').val()) {
+				$('#fee').val(removeCommasBuf);
+				setTextCursorPosition($('#fee'), caretPosition - 1);
+			}
+			casheFee = $('#fee').val();
+		}
+		
+	}
+
+	function doPaymentTransaction() {
+	
+		var base58SenderAccountSeed = document.getElementById('base58SenderAccountSeed').value;
+		
+		var senderAccountSeed = Base58.decode(base58SenderAccountSeed);
+		
+		if(senderAccountSeed.length != 32) {
+			$('#base58SenderAccountAddress').val('');
+			$("#output").val("invalid seed!");
+			return;
+		}
+		
+		keyPair = getKeyPairFromSeed(senderAccountSeed);
+		
+		var base58SenderAccountAddress = getAccountAddressFromPublicKey(keyPair.publicKey);
+		
+		$('#base58SenderAccountAddress').val(base58SenderAccountAddress);
+
+		
+		if($('#base58LastReferenceOfAccount').val() == "" || $('#base58LastReferenceOfAccount').val() == 'false') {
+			doLoadLastReference();
+			sleep(200);
+		}
+		
+		if($('#timestamp').val() == "") {
+			doNowTime();
+		}
+		var quantity = $('#quantity').val();
+		var timestamp = parseInt($('#timestamp').val());
+		var head = $("#nameAsset").val(); //"Проверка";
+		var message = $("#description").val();
+		var icon = [0];
+		var image = imagebyte;
+		var port = $("#port").val();
+		var scale = $("#scale").val();
+		var divisible = 0;
+		if($('#divisible').prop('checked')){
+		divisible =1;
+		}
+		
+	
+	// issue Asset transaction
+		$("#txRaw").val(Base58.encode(issue_Asset(keyPair, timestamp, head, icon, image, message, quantity, scale, divisible,port)));
+		var a = $("#txRaw").val().length;
+		if($("#txRaw").val().length < 1250){ 
+		$("#myLink").html('<a href="http://127.0.0.1:9077/api/broadcast/' + $("#txRaw").val() +'">http://127.0.0.1:9077/api/broadcast/' + $("#txRaw").val() +'</a>');
+		}
+	}
+
+	function onLoad()
+	{
+		document.getElementById('files').addEventListener('change', handleFileSelect, false);
+		$("#nodeUrl").val(nodeUrl);
+		$("#port").val(port);
+		setInterval(doUpdate, 300);
+		$("#nameAsset").val('');
+		doNowTime();
+	}
+	
+	 
+  
+
+ 
+	
+</script>
+<body style="margin:4; padding:25" onload="onLoad()">
+	
+	<center>
+	<div style='height: 140px;' id='menu'></div>
+	<h3>ERA Issue Asset</h3>
+	<table>
+	<tr><td>
+	
+	<b>Sender:</b><br>
+    <span style='width:110px; display: inline-block;'>Account Seed:</span> <input autofocus style='width:600px;' type="text" value="" id="base58SenderAccountSeed"/><br>
+    <span style='width:110px; display: inline-block;'>Account addr:</span> <input style='width:600px;' type="text" value="" id="base58SenderAccountAddress"/><br>
+    <span style='width:110px; display: inline-block;'>Balance:</span> <input style='width:560px;' class='readonly' readonly  type="text" value="" id="senderBalance"/><span style='width:40px; display: inline-block;'>&nbsp;ERA</span><br>
+	<span style='width:110px; display: inline-block;'>Timestamp:</span> <input style='width:122px;' type="text" value="" id="timestamp"/><span style='width:80px; display: inline-block;'>&nbsp;DateTime:</span><input style='width:158px;' class='readonly' readonly type="text" value="" id="datetime"/><input  style='width:40px; padding: 1px;' type="button" value="Now" OnClick="doNowTime()"/><br>
+	<br><br>
+	<span style='width:110px; display: inline-block;'>Name Asset:</span> <input style='width:600px;' type="text" id="nameAsset"/>
+	<br><br>
+	<span style='width:110px; display: inline-block;'>Image</span><input type="file" id="files" style='width:600px;' name="files[]"/>
+	<span style='width:110px; display: inline-block;'></span><span id='img' ></span> 
+	<br><br>
+	<span style='width:110px; display: inline-block;'>Description:</span><textarea style='width:600px; height: 115px;' id=description></textarea>
+	<br><br>
+    <span style='width:110px; display: inline-block;'>Quantity:</span> <input style='width:600px;' type="text" value="0" id="quantity"/>
+	<br><br>
+	<span style='width:110px; display: inline-block;'>Scale:</span><input style='width:600px;' type="text" value="2" id="scale"/>
+	<br><br>
+	<span style='width:110px; display: inline-block;'>Divisible</span><input type="checkbox" id="divisible"/>
+	
+	<br><br>
+	<input  style='width:715px;' type="button" id='generateTransaction' value="GET Transaction RAW" OnClick="doPaymentTransaction()"/><br>
+
+
+	<textarea style='width:715px; height: 115px;' id=txRaw></textarea><br>	
+	<br>
+	<span style='width:110px; display: inline-block;'>WEB URL:</span> <input style='width:1`80px;' type="text" value="127.0.01" id="nodeUrl"/><span style='width:200px; display: inline-block;'>&nbsp;ERA Chain Port:</span><input style='width:100px;' class='readonly' readonly type="text" value="" id="port"/>
+	<br><br>
+	<div id="myLink" style='width:715px; word-break: break-all;' ></div>
+	<br><br>
+	<input  style='width:715px;' type="button" value="JQuery GET Process" OnClick="doProcess()"/><br><br>
+	<input  style='width:715px;' type="button" value="JQuery POST Process" OnClick="doPostProcess()"/><br><br>
+	Result:<br>
+	<textarea style='width:715px; height: 115px;' id=output></textarea><br>	
+
+	
+	<output id="list"></output>
+	<br>
+	</table>
+	<div id='img'></div>
+	<div id='bottom'></div>
+	</center>
+</body>
+	
