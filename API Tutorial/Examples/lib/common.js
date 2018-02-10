@@ -10,8 +10,9 @@
 		+ '<a href=issueasset.html>Issue Asset</a> | '
 		+ '<a href=assetsend.html>Send Asset</a> | '
 		+ '<a href=personinfogenerate.html>Generate Person Info</a> | '
+		+ '<a href=personparseinfo.html>Parse Person Info</a> | '
 		+ '<a href=personinfowritechain.html>Insert Person Info in ERaChain</a> | '
-		+ '<a href=personcertify.html>Certification Person </a> | '
+		+ '<a href=personsertify.html>Certification Person </a> | '
 		+ '<a href=vouchtransaction.html>Vouch Transaction </a> | '
 		+ '<a href=statusissue.html>Issue Status</a> | '
 		+ '<a href=statusset.html>Set Status</a> | '
@@ -271,6 +272,8 @@
 	return bytes;
 	}
 	
+	
+	
 	function toUTF8Array(str) {
     var utf8 = [];
     for (var i=0; i < str.length; i++) {
@@ -321,4 +324,8 @@ function handleFileSelect(evt) {
 	}
 	 
 	}
+
    }
+   
+   
+	

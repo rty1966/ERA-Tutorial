@@ -89,7 +89,7 @@
 		var gender = $('#gender').val(); //0;
 		var birthLatitude = $('#birthLatitude').val();//31.1;
 		var birthLongitude = $('#birthLongitude').val(); //140.1;
-		var skinColor = "";
+		var skinColor = $('#skinColor').val(); //"";
 		var eyeColor = $('#eyeColor').val();//"карие";
 		var hairColor = $('#hairColor').val(); //"Светлый";
 		var height = $('#heightperson').val();//183;
@@ -100,7 +100,9 @@
 	// person to byte
 	var a;
 	a = toBytePerson(keyPair, head, icon,image , description, birthdayBytes, deathdayBytes, gender, race, birthLatitude, birthLongitude,skinColor, eyeColor,hairColor, height);
-		$("#txRaw").val(Base58.encode(a));
+	bb = Base58.encode(a);
+	$("#txRaw").val(bb);
+	
 	}
 
 	function onLoad()

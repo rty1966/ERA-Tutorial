@@ -1,0 +1,76 @@
+<html style='height:100%'>
+<head>
+	<title>Generate Person Info</title>
+	<<script src="./lib/jquery-2.2.0.js"></script>
+	<script src="./lib/nacl-fast.js" charset="utf-8"></script>
+	<script src="./lib/Base58.js" charset="utf-8"></script>
+	<script src="./lib/sha256.js" charset="utf-8"></script>
+	<script src="./lib/ripemd160.js" charset="utf-8"></script>
+	<script src="./lib/eralib.js" charset="utf-8"></script>
+	<script src="./lib/common.js" charset="utf-8"></script>
+	<link href="bootstrap.css" rel="stylesheet">
+	<link href="common.css" rel="stylesheet">
+</head>
+
+<style>
+
+</style>
+
+<script type="text/javascript">
+
+	function doPaymentTransaction() {
+	var person = byteToPerson($("#txRaw").val());
+	//person["type"];
+	$('#base58SenderAccountAddress').html(getAccountAddressFromPublicKey(Base58.encode(person["senderAccount"])));
+	$('#namePerson').val(person["personName"]);
+	//person["icon"] = icon;
+	//person["image"] = image;
+	$('#description').val(person["description"]);
+	//person["birthday"] = birthday;
+	//person["deathday"] = deathday;
+	//person["gender"] = gender;
+	//person["race"] = race;
+	//person["birthLatitude"] = birthLatitude;
+	//person["birthLongitude"] = birthLongitude;
+	//person["skinColor"] = skinColor;
+	//person["eyeColor"] = eyeColor;
+	//person["hairColor"] = hairColor;
+	$('#heightperson').val(person["height"]);
+	//person["ownerSignature"] = ownerSignature;
+	
+	}
+
+	function onLoad()
+	{
+				
+	}
+	
+	
+</script>
+<body style="margin:4; padding:25" onload="onLoad()">
+	
+	<center>
+	<div style='height: 140px;' id='menu'></div>
+	<h3>Paste Person Info Base58 Bytes<h3>
+	<table style='width:60%; border-spacing: 7px 5px;'>
+	<tr><td style='width:100%; padding: 10px;' ><textarea style='width:100%; height: 115px;' id=txRaw></textarea><br>	</td></tr>
+	<tr><td style='width:100%; padding: 10px;' ><input  style='width:100%;' type="button" id='generateTransaction' value="Parse Person Info" OnClick="doPaymentTransaction()"/><br></td></tr>
+	</table>
+	<h3>Person Info</h3>
+	<table style='width:60%; border-spacing: 7px 5px;'>
+	<tr><td style='width:20%; padding: 10px;'><b>Person</b></td><td ></td></tr>
+	<tr><td style='width:20%; padding: 10px;' >Account addr:</td><td  ><div id="base58SenderAccountAddress"></div></td></tr>
+	<tr><td style='width:20%; padding: 10px;' >Name:</td><td ><input style='width:100%;' type="text" value="" id="namePerson"/></td></tr>
+	<tr><td style='width:20%; padding: 10px;' >Description:</td><td ><textarea style='width:100%; height: 45px;' id="description"></textarea><br>	</td></tr>
+	<tr><td style='width:20%; padding: 10px;' >Image:</td><td ><span id='img' ></span> </td></tr>
+	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>birthday:</span> <input style='width:100px;' type="text" value="" id="birthday"/><span style='width:120px; display: inline-block;'>&nbsp;deathday:</span><input style='width:100px;' type="text" value="" id="deathday"/></td>
+	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>birthLatitude:</span> <input style='width:100px;' type="text" value="" id="birthLatitude"/><span style='width:120px; display: inline-block;'>&nbsp;birthLongitude:</span><input style='width:100px;' type="text" value="" id="birthLongitude"/></td>
+	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>gender(0-m, 1-f):</span> <input style='width:100px;' type="text" value="" id="gender"/><span style='width:120px; display: inline-block;'>&nbsp;race:</span><input style='width:100px;' type="text" value="" id="race"/></td>
+	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>height:</span> <input style='width:100px;' type="text" value="" id="heightperson"/><span style='width:120px; display: inline-block;'>&nbsp;hairColor:</span><input style='width:100px;' type="text" value="" id="hairColor"/></td>
+	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>eyeColor:</span> <input style='width:100px;' type="text" value="" id="eyeColor"/><span style='width:120px; display: inline-block;'>&nbsp;skinColor:</span><input style='width:100px;' type="text" value="" id="skinColor"/></td>
+	<tr></tr> 
+	</table>
+	<div id='bottom'></div>
+	</center>
+</body>
+	

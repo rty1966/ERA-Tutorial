@@ -411,10 +411,11 @@ return data;
 // quantity		- QTY (Long)
 // scale		- scale (int)
 // divasible	- Divisible (0 - not divisible, 1 - divisible)
+// movable		- Movable (0 - not movable, 1- movable)
 // port 		- ERA network PORT 9046 or dev:9066 (int)			
-// issue_Asset(keyPair, 1514529622881, "Asset asset develop", byte[], byte[], "description", 1000, 2, 0, 9046)
+// issue_Asset(keyPair, 1514529622881, "Asset asset develop", byte[], byte[], "description", 1000, 2, 0, 19046)
 // return byte[]
-function issue_Asset(keyPair, timestamp, asset_name, icon, image, description, quantity, scale, divasible, port){
+function issue_Asset(keyPair, timestamp, asset_name, icon, image, description, quantity, scale, divasible, movable, port){
 // type transaction
 	const typeBytes = [21,0,0,0];
 	// timestamp
@@ -429,7 +430,7 @@ function issue_Asset(keyPair, timestamp, asset_name, icon, image, description, q
 	
 	var data1 = new Uint8Array();
 	// item part
-	data1 = appendBuffer(data1, toByteItemPart([2,0], keyPair.publicKey, asset_name, icon, image, description )); // item part
+	data1 = appendBuffer(data1, toByteItemPart([2,movable], keyPair.publicKey, asset_name, icon, image, description )); // item part
 	// asset part
 	data1 = appendBuffer(data1, int64ToBytes(quantity));			// Quantity
 	data1 = appendBuffer(data1, [scale]);							// Scale 1 byte
@@ -460,7 +461,7 @@ function issue_Person_Transaction(keyPair, timestamp, data, port){
 return toByteEndPart(data0, data, keyPair.privateKey, port );
 }
 
-// create Persondata
+// create PERSON_DATA!!!
 // keyPair 			- pair public key + security key (byte64, byte32)
 // name				- name (String)
 // icon				- Icon (byte[])
@@ -491,6 +492,7 @@ function toBytePerson(keyPair, name, icon, image, description, birthday, deathda
 	var arr = toUTF8Array(race);
 	data = appendBuffer(data, [arr.length]);					//raceLength	BYTE[1]	int
 	data = appendBuffer(data, arr);				//race 	BYTE[raceLength]	String
+	var dd = floatTo32Byte(birthLatitude);
 	data = appendBuffer(data, floatTo32Byte(birthLatitude));		// birthLatitude	BYTE[4]	float
 	data = appendBuffer(data, floatTo32Byte(birthLongitude));	// birthLongitude	BYTE[4]	float
 	arr =  toUTF8Array(skinColor);
@@ -506,6 +508,120 @@ function toBytePerson(keyPair, name, icon, image, description, birthday, deathda
 	var signature = nacl.sign.detached(data, keyPair.privateKey); // ownerSignature	BYTE[64]	BYTE[]
 	data = appendBuffer(data, signature);
 	return data;
+}
+
+
+function  byteToNum(/*byte[]*/byteArray) {
+    var value = 0;
+    for ( var i = 0; i< byteArray.length; i++) {
+        value = (value * 256) + byteArray[i];
+    }
+
+    return value;
+	};
+
+
+// parse raw - base58.encode(PERSON_DATA!!!)
+function byteToPerson(raw){
+
+var position = 0;
+
+var data = Base58.decode(raw);
+// type 
+var type = (data.slice(position,position+2));
+position = position+2;
+// sender account
+var senderAccount = (data.slice(position,position+32));
+position = position+32;
+var ss = [0,data[position]];
+var  nameLegt = byteToNum(ss);
+position = position+1;
+// name
+var personName = new TextDecoder('UTF-8').decode(data.slice(position,position+ nameLegt));
+position = position + nameLegt;
+var iconLeght = byteToNum(data.slice(position,position+2));
+position = position + 2;
+// icon
+var icon = data.slice(position, position + iconLeght);
+position = position + iconLeght;
+var imageLeght = byteToNum(data.slice(position, position+4));
+position = position + 4;
+// image
+var image = data.slice(position, position+ imageLeght);
+position = position + imageLeght;
+var descriptionLeght = byteToNum(data.slice(position, position+4));
+position = position + 4;
+// descriprion
+var description = new TextDecoder('UTF-8').decode(data.slice(position, position+ descriptionLeght));
+position = position + descriptionLeght;
+// birthday
+var birthday = byteToNum(data.slice(position, position+8));
+position= position+8;
+// deathday
+var deathday  = byteToNum(data.slice(position, position+8));
+position= position+8;
+// gender
+var gender = byteToNum(data.slice(position, position+1));
+position =position +1; 
+var raceLength = byteToNum(data.slice(position, position+1));
+position =position +1; 
+// race
+var race = new TextDecoder('UTF-8').decode(data.slice(position, position+raceLength));
+position= position+raceLength;
+//READ BIRTH LATITUDE
+var birthLatitude =data.slice(position, position + 4);
+position = position + 4;
+//READ BIRTH LONGITUDE
+var birthLongitude = data.slice(position, position + 4);
+position = position + 4;
+//READ SKIN COLOR LENGTH
+var skinColorLength = byteToNum(data.slice(position, position+1));
+position =position + 1;
+var skinColor = new TextDecoder('UTF-8').decode(data.slice(position, position + skinColorLength));
+position = position + skinColorLength;
+//READ EYE COLOR LENGTH
+var eyeColorLength = byteToNum(data.slice(position, position+1));
+position = position + 1;
+var eyeColor = new TextDecoder('UTF-8').decode(data.slice(position, position + eyeColorLength));
+position = position + eyeColorLength;
+//READ HAIR COLOR LENGTH
+var hairColorLength = byteToNum(data.slice(position, position+1));
+position = position + 1;
+var  hairColor = new TextDecoder('UTF-8').decode(data.slice(position, position + hairColorLength));
+position = position + hairColorLength;
+//READ HEIGHT
+var height = byteToNum(data.slice(position, position+1));
+position = position + 1;
+		var ownerSignature;
+		if (type[1] == 1) {
+			// with signature
+			//READ SIGNATURE
+			ownerSignature = data.slice(position, position + 64);
+			position = position + 64;
+		} else {
+			ownerSignature = [];
+		}
+		
+var person = new Number();
+person["type"] = type;
+person["senderAccount"] = senderAccount; 		
+person["personName"] = personName;
+person["icon"] = icon;
+person["image"] = image;
+person["description"] = description;
+person["birthday"] = birthday;
+person["deathday"] = deathday;
+person["gender"] = gender;
+person["race"] = race;
+person["birthLatitude"] = birthLatitude;
+person["birthLongitude"] = birthLongitude;
+person["skinColor"] = skinColor;
+person["eyeColor"] = eyeColor;
+person["hairColor"] = hairColor;
+person["height"] = height;
+person["ownerSignature"] = ownerSignature;
+return person;
+		
 }
 // raw SertifyPubKeys for Person transaction
 // keyPair			- pair public key + security key (byte64, byte32)
