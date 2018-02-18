@@ -18,6 +18,7 @@
 		+ '<a href=statusset.html>Set Status</a> | '
 		+ '<a href=ordercreate.html>Create Order</a> | '
 		+ '<a href=orderdelete.html>Delete Order</a> | '
+		+ '<a href=hashes_issue.html>Write Hashes</a> | '
 		+ '<a href=documentissue.html>Issue Document</a> | '
 		+ '<a href=' + nodeUrl+ '/index/blockexplorer.html>BlockExplorer</a>'
 		+ '</b>');
@@ -317,7 +318,7 @@ function handleFileSelect(evt) {
      // Read in the image file as a data URL.
 	  reader.readAsArrayBuffer(f); // readAsArrayBuffer(f);
 	  reader.onload = function(e){
-	  imagebyte = new Uint8Array(e.target.result)
+	  imagebyte = new Uint8Array(e.target.result);
 	  var  base64String = btoa(String.fromCharCode.apply(null, imagebyte)); 
 	  var ss = '<img  src="data:image/jpeg;base64,' + base64String + '" style="max-width:300px; height: AUTO;"/>';
 	  $("#img").html(ss);

@@ -706,6 +706,51 @@ function issue_Status(keyPair, timestamp, name, icon, image, description, unique
 	// end part
 	return toByteEndPart(data0, data1, keyPair.privateKey, port );
 }
+
+// raw write Hashes transaction
+// keyPair			- pair public key + security key (byte64, byte32)
+// timestamp		- Unix timestamp (Long). 1514529622881
+// name				- name (String)
+// hashes[]			- Hashes[] (byte[])
+// description		- Description (String)
+// port				- ERA network PORT 9046 or dev:9066 (int)
+// write_Hashes(keyPair, 1514529622881, "Haseshes name", hashes[], "Hashes description", 9046)
+// return byte[]
+function write_Hashes(keyPair, timestamp, name, hashes, description, port){
+// type transaction
+	if (hashes.lignth > 65534) return;
+	// size hashes to 4 byte
+	hash_l = int32ToBytes(hashes.length);
+	var typeBytes = [41,0,hash_l[2],hash_l[3]];
+	// timestamp
+	const timestampBytes = int64ToBytes(timestamp);
+	// referens
+	const lastReferenceByte = [0,0,0,0,0,0,0,0];
+	// Fee param
+	const fee_c = [0];
+	var data0 = new Uint8Array();
+	// start part
+	data0 = tobyteBasePart(typeBytes, timestampBytes, lastReferenceByte, keyPair.publicKey, fee_c);
+	
+	var data1 = new Uint8Array();
+	// title
+	var arr = toUTF8Array(name);
+	data1 = appendBuffer(data1, [arr.length]); 				// title lenght
+	data1 = appendBuffer(data1, arr );			// title
+	// description
+	arr = toUTF8Array(description);
+	data1 = appendBuffer(data1, int32ToBytes(arr.length)); 	// description lenght
+	data1 = appendBuffer(data1, arr);			// description
+	// Hashes part
+	//data1 = appendBuffer(data1, toByteItemPart([1,unique], keyPair.publicKey, name, icon, image, description )); // item part
+	for (i=0; i< hashes.length; i++){
+	data1 = appendBuffer(data1, hashes[i]);
+	}
+	// end part
+	return toByteEndPart(data0, data1, keyPair.privateKey, port );
+}
+
+
 // raw Set status to item transaction
 // keyPair			- pair public key + security key (byte64, byte32)
 // timestamp		- Unix timestamp (Long). 1514529622881
