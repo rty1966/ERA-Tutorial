@@ -121,6 +121,8 @@
 		var recipientAccountAddress = Base58.decode($('#base58RecipientAccountAddress').val());
 		// asset key
 		var asset_key = $('#assetkey').val();
+		// scale
+		var scale =$("#scale").val();
 		// Quantity
 		var quantity = $('#quantity').val();
 		// Title
@@ -136,7 +138,7 @@
 		
 				
 	// r_send transaction	
-		$("#txRaw").val(Base58.encode(generate_R_Send_TransactionBase(keyPair, recipientAccountAddress, asset_key, quantity, timestamp, title, message, enscript, is_text, port)));
+		$("#txRaw").val(Base58.encode(generate_R_Send_TransactionBase(keyPair, recipientAccountAddress, asset_key, quantity, scale, timestamp, title, message, enscript, is_text, port)));
 	// show url transaction
 		$("#myLink").html('<a href="' + $("#nodeUrl").val() + '/api/broadcast/' + $("#txRaw").val() +'">' + $("#nodeUrl").val() + '/api/broadcast/' + $("#txRaw").val() +'</a>');
 	}
@@ -167,7 +169,8 @@
 	<tr><td style='width:20%; padding: 10px;' >Account addr:</td><td ><input style='width:100%;' type="text" value="" id="base58RecipientAccountAddress"/></td></tr>
 	<tr><td style='width:20%; padding: 10px;' >Balance:</td><td  ><div id="recipientBalance"></div></td></tr>
 	<tr><td style='width:20%; padding: 10px;' >Asset Key</td><td ><input style='width:80px;' type="text" value="1" id="assetkey"/>
-	<span style='width:50px; display: inline-block;'></span><span style='width:110px; display: inline-block;'>Quantity:</span> <input style='width:150px;' type="text" value="1" id="quantity"/>
+	<span style='width:50px; display: inline-block;'></span><span style='width:80px; display: inline-block;'>Quantity:</span> <input style='width:80px;' type="text" value="1" id="quantity"/>
+	<span style='width:50px; display: inline-block;'></span><span style='width:80px; display: inline-block;'>Scale:</span> <input style='width:50px;' type="text" value="1" id="scale"/>
 	</td></tr>
 	<tr><td style='width:20%; padding: 10px;' >Timestamp:</td>
 	<td >

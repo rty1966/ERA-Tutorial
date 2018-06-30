@@ -309,6 +309,7 @@ function generatePaymentTransactionBase(publicKey, lastReference, recipient, amo
 // recipient	- recipient (byte[25])
 // asset_key	- asset Key (Long)
 // amount		- Ammount    (Float); null
+// scale 		-Scale  (2 - 0.00,  3 -0.000, 1 - 0.0......  16 - 0.0000000000000000)
 // timestamp	- Unix timestamp (Long). 1514529622881
 // title		- Title (String)
 // message		- Message (String); null
@@ -317,7 +318,7 @@ function generatePaymentTransactionBase(publicKey, lastReference, recipient, amo
 // port 		- ERA network PORT 9046 or dev:9066 (int)
 // generate_R_Send_TransactionBase(keyPair, recipient, 1, 10.000001, 1514529622881, "Title", "Message", 0, 1, 9066)
 // return byte[]
-function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount, timestamp, title, message, enscript, is_text, port) {
+function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount, scale, timestamp, title, message, enscript, is_text, port) {
 	// type transaction
 	
 	// referens
@@ -332,7 +333,23 @@ function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount,
 	// amount  10.20 * 100000000
 	var  am = -1;
 	if (amount !=0 && amount !=null){
-	data1 = appendBuffer(data1, int64ToBytes(parseFloat(amount) * 100000000));
+	// WRITE ACCURACY of AMMOUNT
+     different_scale = scale - 8;
+     if (different_scale != 0) {
+                // RESCALE AMOUNT
+				 
+					ss = parseFloat(amount) *Math.pow(10,scale);
+                data1 = appendBuffer(data1, int64ToBytes(ss));
+				
+              //  amountBase = this.amount.scaleByPowerOfTen(different_scale);
+                if (different_scale < 0){
+                    different_scale += 31 + 1;
+					}
+                
+            } else {
+                data1 = appendBuffer(data1, int64ToBytes(parseFloat(amount) * 100000000));
+            }
+			
 	am = 0;
 	}
 	// Title 
@@ -340,14 +357,16 @@ function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount,
 	data1 = appendBuffer(data1, [arr.length]);
 	data1 = appendBuffer(data1, arr);
 	// Message
-	mes = -1;
+	
 	if (message != null && message !=""){
 	arr = toUTF8Array(message);
 	data1 = appendBuffer(data1, int32ToBytes(arr.length));
 	data1 = appendBuffer(data1, arr);
 	data1 = appendBuffer(data1, enscript);
 	data1 = appendBuffer(data1, is_text);
-	mes = 0; // with amount
+	mes = different_scale; // with message
+	}else{
+	mes = -128|different_scale;
 	}
 	var typeBytes = [31,0,am,mes]; // with amount
 	var data0 = new Uint8Array();

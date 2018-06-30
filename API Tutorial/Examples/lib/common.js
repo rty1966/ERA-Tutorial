@@ -37,7 +37,7 @@
 		
 		var nodeUrl = $("#nodeUrl").val();
 
-		$.post( nodeUrl + "/index/api.html", { type: "get", apiurl: "/addresses/balance/" + base58SenderAccountAddress } )
+		$.post( nodeUrl + "/api", { type: "get", apiurl: "/addresses/balance/" + base58SenderAccountAddress } )
 			.done(function( data ) {
 				
 				if(data.type == 'success'){
