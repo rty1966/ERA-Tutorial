@@ -90,8 +90,10 @@
 	var want_asset = $('#wantasset').val(); // 2
 	var have_ammount = $('#haveammount').val(); //9876.54321;
 	var want_ammount = $('#wantammount').val(); // 1234.567890;
+	var scale_haveasset = $('#scale_haveasset').val();
+	var scale_wantasset = $('#scale_wantasset').val();
 	var port = $("#port").val();
-	$("#txRaw").val(Base58.encode(Create_Order(keyPair, timestamp, have_asset, want_asset, have_ammount, want_ammount, port)));
+	$("#txRaw").val(Base58.encode(Create_Order(keyPair, timestamp, have_asset, scale_haveasset, want_asset, scale_wantasset, have_ammount, want_ammount, port)));
 	$("#myLink").html('<a href="' + $("#nodeUrl").val() + '/api/broadcast/' + $("#txRaw").val() +'">' + $("#nodeUrl").val() + '/api/broadcast/' + $("#txRaw").val() +'</a>');
 	}
 
@@ -118,8 +120,15 @@
 	<tr><td style='width:20%; padding: 10px;' >Account addr:</td><td  ><div id="base58SenderAccountAddress"></div></td></tr>
 	<tr><td style='width:20%; padding: 10px;' >Balance:</td><td  ><div id="senderBalance"></div></td></tr>
 	<tr><td style='width:20%; padding: 10px;'><b>Order:</b></td><td ></td></tr>
-	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>Key have Asset:</span> <input style='width:100px;' type="text" value="1" id="haveasset"/><span style='width:120px; display: inline-block;'>&nbsp;Have Ammount:</span><input style='width:100px;' type="text" value="10.1" id="haveammount"/></td>
-	<tr><td style='width:20%; padding: 10px;' ></td><td ></span><span style='width:120px; display: inline-block;'>Key want Asset:</span> <input style='width:100px;' type="text" value="2" id="wantasset"/><span style='width:120px; display: inline-block;'>&nbsp;Want Ammount:</span><input style='width:100px;' type="text" value="1.1" id="wantammount"/></td>
+	<tr><td style='width:20%; padding: 10px;' ></td><td >
+	</span><span style='width:100px; display: inline-block;'>Key have Asset:</span> <input style='width:100px;' type="text" value="1" id="haveasset"/>
+	<span style='width:100px; display: inline-block;'>&nbsp;Scale have Asset:</span><input style='width:100px;' type="text" value="0" id="scale_haveasset"/>
+	<span style='width:120px; display: inline-block;'>&nbsp;Have Ammount:</span><input style='width:100px;' type="text" value="10.1" id="haveammount"/></td>
+	<tr><td>  </tr>
+	<tr><td style='width:20%; padding: 10px;' ></td><td ></span>
+	<span style='width:100px; display: inline-block;'>Key want Asset:</span> <input style='width:100px;' type="text" value="2" id="wantasset"/>
+	<span style='width:100px; display: inline-block;'>Scale want Asset:</span> <input style='width:100px;' type="text" value="0" id="scale_wantasset"/>
+	<span style='width:120px; display: inline-block;'>&nbsp;Want Ammount:</span><input style='width:100px;' type="text" value="1.1" id="wantammount"/></td>
 	
 	<tr><td style='width:20%; padding: 10px;' >Timestamp:</td>
 	<td >

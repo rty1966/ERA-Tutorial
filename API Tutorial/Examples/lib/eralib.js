@@ -850,13 +850,15 @@ function R_SetStatusToItem(keyPair, timestamp, status_Key, item_Type, item_Key, 
 // Create Order
 // keyPair			- pair public key + security key (byte64, byte32)
 // timestamp		- Unix timestamp (Long). 1514529622881
-// have_asset		- key have Asset (Long)
+// have_asset		- key  have_asset (Long)
+//scale_h_asset - scale  have_asset
 // want_asset		- key want Asset (Long)
+// scale_w_asset 		-scale want Asset 
 // have_ammount		- have amount (Float)  100.23
 // want_ammount		- want amount (Float) 122.03
 // port				- ERA network PORT 9046 or dev:9066 (int)
 // Create_Order(keyPair, 1514529622881, 1, 2, 100.23, 122.03, 9046)
-function Create_Order(keyPair, timestamp, have_asset, want_asset, have_ammount, want_ammount, port){
+function Create_Order(keyPair, timestamp, have_asset, scale_h_asset, want_asset, scale_w_asset, have_ammount, want_ammount, port){
 // type transaction
 	const typeBytes = [50,0,0,0];
 	// timestamp
@@ -866,15 +868,55 @@ function Create_Order(keyPair, timestamp, have_asset, want_asset, have_ammount, 
 	// Fee param
 	const fee_c = [0];
 	var data0 = new Uint8Array();
-	// start part
-	data0 = tobyteBasePart(typeBytes, timestampBytes, lastReferenceByte, keyPair.publicKey, fee_c);
+	
 	
 	var data1 = new Uint8Array();
 	// item part
 	data1 = appendBuffer(data1, int64ToBytes(have_asset));  // item part
 	data1 = appendBuffer(data1, int64ToBytes(want_asset));  // item part
-	data1 = appendBuffer(data1, int64ToBytes(parseFloat(have_ammount * 100000000)));  // item part
-	data1 = appendBuffer(data1, int64ToBytes(parseFloat(want_ammount * 100000000)));  // item part
+	
+	// WRITE ACCURACY of HAVE AMMOUNT
+     h_different_scale = scale_h_asset - 8;
+     if (h_different_scale != 0) {
+                // RESCALE AMOUNT
+				 
+					ss = parseFloat(have_ammount) *Math.pow(10,scale_h_asset);
+                data1 = appendBuffer(data1, int64ToBytes(ss));
+				
+              //  amountBase = this.amount.scaleByPowerOfTen(different_scale);
+                if (h_different_scale < 0){
+                    h_different_scale += 31 + 1;
+					}
+                
+            } else {
+                data1 = appendBuffer(data1, int64ToBytes(parseFloat(have_ammount) * 100000000));
+            }
+	//data1 = appendBuffer(data1, int64ToBytes(parseFloat(have_ammount * 100000000)));  // item part
+	
+	// WRITE ACCURACY of HAVE AMMOUNT
+     w_different_scale = scale_w_asset - 8;
+     if (w_different_scale != 0) {
+                // RESCALE AMOUNT
+				 
+					ss = parseFloat(want_ammount) *Math.pow(10,scale_w_asset);
+                data1 = appendBuffer(data1, int64ToBytes(ss));
+				
+              //  amountBase = this.amount.scaleByPowerOfTen(different_scale);
+                if (w_different_scale < 0){
+                    w_different_scale += 31 + 1;
+					}
+                
+            } else {
+                data1 = appendBuffer(data1, int64ToBytes(parseFloat(want_ammount) * 100000000));
+            }
+	
+	//data1 = appendBuffer(data1, int64ToBytes(parseFloat(want_ammount * 100000000)));  // item part
+	
+	// start part
+	typeBytes[2]=h_different_scale;
+	typeBytes[3]=w_different_scale;
+	data0 = tobyteBasePart(typeBytes, timestampBytes, lastReferenceByte, keyPair.publicKey, fee_c);
+	
 	// end part
 	return toByteEndPart(data0, data1, keyPair.privateKey, port );
 }
