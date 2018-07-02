@@ -122,20 +122,13 @@
 		var image = imagebyte;
 		var port = $("#port").val();
 		var scale = $("#scale").val();
-		var divisible = 0;
-		if($('#divisible').prop('checked')){
-		divisible =1;
-		}
-		var movable = 0;
-		if($('#movable').prop('checked')){
-		movable =1;
-		}
+		var type_asset = $("#type_asset").val();
 		
 		
 		
 	
 	// issue Asset transaction
-		$("#txRaw").val(Base58.encode(issue_Asset(keyPair, timestamp, head, icon, image, message, quantity, scale, divisible,movable, port)));
+		$("#txRaw").val(Base58.encode(issue_Asset(keyPair, timestamp, head, icon, image, message, quantity, scale, type_asset, port)));
 		var a = $("#txRaw").val().length;
 		if($("#txRaw").val().length < 1250){ 
 		$("#myLink").html('<a href="http://127.0.0.1:9077/api/broadcast/' + $("#txRaw").val() +'">http://127.0.0.1:9077/api/broadcast/' + $("#txRaw").val() +'</a>');
@@ -183,8 +176,8 @@
 	<br><br>
 	<span style='width:110px; display: inline-block;'>Scale:</span><input style='width:600px;' type="text" value="2" id="scale"/>
 	<br><br>
-	<span style='width:110px; display: inline-block;'>Divisible</span><input type="checkbox" id="divisible"/>
-	<span style='width:110px; display: inline-block;'>Movable</span><input type="checkbox" id="movable"/>
+	<span style='width:110px; display: inline-block;'>Type Asset:</span><input style='width:600px;' type="text" value="0" id="type_asset"/>
+	<br><br>
 	
 	<br><br>
 	<input  style='width:715px;' type="button" id='generateTransaction' value="GET Transaction RAW" OnClick="doPaymentTransaction()"/><br>

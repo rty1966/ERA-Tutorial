@@ -429,12 +429,12 @@ return data;
 // description	- Description (String)
 // quantity		- QTY (Long)
 // scale		- scale (int)
-// divasible	- Divisible (0 - not divisible, 1 - divisible)
-// movable		- Movable (0 - not movable, 1- movable)
+// type_asset	- type asset (see Documentation)
+
 // port 		- ERA network PORT 9046 or dev:9066 (int)			
 // issue_Asset(keyPair, 1514529622881, "Asset asset develop", byte[], byte[], "description", 1000, 2, 0, 19046)
 // return byte[]
-function issue_Asset(keyPair, timestamp, asset_name, icon, image, description, quantity, scale, divasible, movable, port){
+function issue_Asset(keyPair, timestamp, asset_name, icon, image, description, quantity, scale, type_asset,  port){
 // type transaction
 	const typeBytes = [21,0,0,0];
 	// timestamp
@@ -449,11 +449,11 @@ function issue_Asset(keyPair, timestamp, asset_name, icon, image, description, q
 	
 	var data1 = new Uint8Array();
 	// item part
-	data1 = appendBuffer(data1, toByteItemPart([2,movable], keyPair.publicKey, asset_name, icon, image, description )); // item part
+	data1 = appendBuffer(data1, toByteItemPart([2,0], keyPair.publicKey, asset_name, icon, image, description )); // item part
 	// asset part
 	data1 = appendBuffer(data1, int64ToBytes(quantity));			// Quantity
 	data1 = appendBuffer(data1, [scale]);							// Scale 1 byte
-	data1 = appendBuffer(data1, [divasible]);						// divasible 1 byte
+	data1 = appendBuffer(data1, [type_asset]);						// type asset 1 byte
 	// end part
 	return toByteEndPart(data0, data1, keyPair.privateKey, port );
 }
