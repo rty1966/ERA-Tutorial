@@ -525,8 +525,8 @@ function toBytePerson(keyPair, name, icon, image, description, birthday, deathda
 	data = appendBuffer(data, [arr.length]);				//eyeColorLength	BYTE[1]	int
 	data = appendBuffer(data,  arr);			// eyeColorBytes	BYTE[eyeColorLength]	string
 	arr= toUTF8Array(hairColor);
-	data = appendBuffer(data, [arr.length]);				//hair�olorLength	BYTE[1]	int
-	data = appendBuffer(data, arr);			//hair�olorBytes	BYTE[hair�olorLength]	string
+	data = appendBuffer(data, [arr.length]);				//hairColorLength	BYTE[1]	int
+	data = appendBuffer(data, arr);			//hairColorBytes	BYTE[hairColorLength]	string
 	data = appendBuffer(data, [height]);						//Height	BYTE[1]	int
 	var signature = nacl.sign.detached(data, keyPair.privateKey); // ownerSignature	BYTE[64]	BYTE[]
 	data = appendBuffer(data, signature);
