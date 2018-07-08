@@ -331,7 +331,7 @@ function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount,
 	// Asset key
 	data1 = appendBuffer(data1, int64ToBytes(asset_key));
 	// amount  10.20 * 100000000
-	var  am = -1;
+	var am = 128;
 	var different_scale = 0;
 	if (amount !=0 && amount !=null) {
         // CALCULATE ACCURACY of AMMOUNT
@@ -353,6 +353,8 @@ function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount,
 		}
 			
 		am = 0;
+	} else {
+		
 	}
 	
 	// Title 
@@ -369,7 +371,7 @@ function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount,
 		data1 = appendBuffer(data1, is_text);
 		mes = different_scale; // with message and AMPUNT SCALE
 	} else {
-		mes = -128|different_scale;
+		mes = 128|different_scale;
 	}
 	// WRITE ACCURACY of AMMOUNT
 	var typeBytes = [31, 0, am, mes]; // with amount SCALE
