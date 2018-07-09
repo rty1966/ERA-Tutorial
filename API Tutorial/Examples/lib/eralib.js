@@ -331,44 +331,50 @@ function generate_R_Send_TransactionBase( keyPair, recipient, asset_key, amount,
 	// Asset key
 	data1 = appendBuffer(data1, int64ToBytes(asset_key));
 	// amount  10.20 * 100000000
-	var  am = -1;
-	if (amount !=0 && amount !=null){
-	// WRITE ACCURACY of AMMOUNT
-     different_scale = scale - 8;
-     if (different_scale != 0) {
-                // RESCALE AMOUNT
-				 
-					ss = parseFloat(amount) *Math.pow(10,scale);
-                data1 = appendBuffer(data1, int64ToBytes(ss));
-				
-              //  amountBase = this.amount.scaleByPowerOfTen(different_scale);
-                if (different_scale < 0){
-                    different_scale += 31 + 1;
-					}
+	var am = 128;
+	var different_scale = 0;
+	if (amount !=0 && amount !=null) {
+        // CALCULATE ACCURACY of AMMOUNT
+		different_scale = scale - 8;
+		if (different_scale != 0) {
+			// RESCALE AMOUNT
+			// amountBase = this.amount.scaleByPowerOfTen(different_scale);
+
+			// shift by SCALE for INTEGER
+			ss = parseFloat(amount) * Math.pow(10, scale);
+			data1 = appendBuffer(data1, int64ToBytes(ss));
+		
+			if (different_scale < 0) {
+				different_scale += 31 + 1;
+			}
                 
-            } else {
-                data1 = appendBuffer(data1, int64ToBytes(parseFloat(amount) * 100000000));
-            }
+		} else {
+			data1 = appendBuffer(data1, int64ToBytes(parseFloat(amount) * 100000000));
+		}
 			
-	am = 0;
+		am = 0;
+	} else {
+		
 	}
+	
 	// Title 
 	var arr = toUTF8Array(title);
 	data1 = appendBuffer(data1, [arr.length]);
 	data1 = appendBuffer(data1, arr);
 	// Message
 	
-	if (message != null && message !=""){
-	arr = toUTF8Array(message);
-	data1 = appendBuffer(data1, int32ToBytes(arr.length));
-	data1 = appendBuffer(data1, arr);
-	data1 = appendBuffer(data1, enscript);
-	data1 = appendBuffer(data1, is_text);
-	mes = different_scale; // with message
-	}else{
-	mes = -128|different_scale;
+	if (message != null && message !="") {
+		arr = toUTF8Array(message);
+		data1 = appendBuffer(data1, int32ToBytes(arr.length));
+		data1 = appendBuffer(data1, arr);
+		data1 = appendBuffer(data1, enscript);
+		data1 = appendBuffer(data1, is_text);
+		mes = different_scale; // with message and AMPUNT SCALE
+	} else {
+		mes = 128|different_scale;
 	}
-	var typeBytes = [31,0,am,mes]; // with amount
+	// WRITE ACCURACY of AMMOUNT
+	var typeBytes = [31, 0, am, mes]; // with amount SCALE
 	var data0 = new Uint8Array();
 	data0 = tobyteBasePart(typeBytes, int64ToBytes(timestamp), lastReferenceByte, keyPair.publicKey, fee_c);
 	return toByteEndPart(data0, data1, keyPair.privateKey, port );
@@ -521,8 +527,8 @@ function toBytePerson(keyPair, name, icon, image, description, birthday, deathda
 	data = appendBuffer(data, [arr.length]);				//eyeColorLength	BYTE[1]	int
 	data = appendBuffer(data,  arr);			// eyeColorBytes	BYTE[eyeColorLength]	string
 	arr= toUTF8Array(hairColor);
-	data = appendBuffer(data, [arr.length]);				//hairÑolorLength	BYTE[1]	int
-	data = appendBuffer(data, arr);			//hairÑolorBytes	BYTE[hairÑolorLength]	string
+	data = appendBuffer(data, [arr.length]);				//hairColorLength	BYTE[1]	int
+	data = appendBuffer(data, arr);			//hairColorBytes	BYTE[hairColorLength]	string
 	data = appendBuffer(data, [height]);						//Height	BYTE[1]	int
 	var signature = nacl.sign.detached(data, keyPair.privateKey); // ownerSignature	BYTE[64]	BYTE[]
 	data = appendBuffer(data, signature);
@@ -878,40 +884,33 @@ function Create_Order(keyPair, timestamp, have_asset, scale_h_asset, want_asset,
 	// WRITE ACCURACY of HAVE AMMOUNT
      h_different_scale = scale_h_asset - 8;
      if (h_different_scale != 0) {
-                // RESCALE AMOUNT
-				 
-					ss = parseFloat(have_ammount) *Math.pow(10,scale_h_asset);
-                data1 = appendBuffer(data1, int64ToBytes(ss));
-				
-              //  amountBase = this.amount.scaleByPowerOfTen(different_scale);
-                if (h_different_scale < 0){
-                    h_different_scale += 31 + 1;
-					}
+    	 // RESCALE AMOUNT
+    	 ss = parseFloat(have_ammount) * Math.pow(10, scale_h_asset);
+    	 data1 = appendBuffer(data1, int64ToBytes(ss));
+			
+		if (h_different_scale < 0) {
+		    h_different_scale += 31 + 1;
+		}
                 
-            } else {
-                data1 = appendBuffer(data1, int64ToBytes(parseFloat(have_ammount) * 100000000));
-            }
-	//data1 = appendBuffer(data1, int64ToBytes(parseFloat(have_ammount * 100000000)));  // item part
+    } else {
+    	data1 = appendBuffer(data1, int64ToBytes(parseFloat(have_ammount) * 100000000));
+    }
 	
-	// WRITE ACCURACY of HAVE AMMOUNT
+     // WRITE ACCURACY of WANT AMMOUNT
      w_different_scale = scale_w_asset - 8;
      if (w_different_scale != 0) {
-                // RESCALE AMOUNT
-				 
-					ss = parseFloat(want_ammount) *Math.pow(10,scale_w_asset);
-                data1 = appendBuffer(data1, int64ToBytes(ss));
+    	 // RESCALE AMOUNT				 
+    	 ss = parseFloat(want_ammount) *Math.pow(10, scale_w_asset);
+    	 data1 = appendBuffer(data1, int64ToBytes(ss));
 				
-              //  amountBase = this.amount.scaleByPowerOfTen(different_scale);
-                if (w_different_scale < 0){
-                    w_different_scale += 31 + 1;
-					}
-                
-            } else {
-                data1 = appendBuffer(data1, int64ToBytes(parseFloat(want_ammount) * 100000000));
-            }
-	
-	//data1 = appendBuffer(data1, int64ToBytes(parseFloat(want_ammount * 100000000)));  // item part
-	
+	    if (w_different_scale < 0) {
+	        w_different_scale += 31 + 1;
+	    }
+	    
+	} else {
+	    data1 = appendBuffer(data1, int64ToBytes(parseFloat(want_ammount) * 100000000));
+	}
+		
 	// start part
 	typeBytes[2]=h_different_scale;
 	typeBytes[3]=w_different_scale;
