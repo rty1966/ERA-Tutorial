@@ -63,7 +63,7 @@ array(8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 
 	        $c = get4byte($b);
             $s = get4byte($ArgArray[0][$index]);
 			$b = get4byte(get4byte(($temp <<$s) | shift($temp, (32 - $s))) + $a);
-			$temp =get4byte( get4byte($A + ($B ^ ($C | ~$D))) + $X[$IndexArray[1][$index]] + (1352829926));
+			$temp =get4byte( get4byte($A + ($B ^ ($C | ~$D))) + $X[$IndexArray[1][$index]] + 1352829926);
 			$A = get4byte($E);
             $E = get4byte($D);
             $D = get4byte(($C <<10) | shift($C , 22));
@@ -75,14 +75,14 @@ array(8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 
 
         for (; $index < 32; $index++) {
 	//		echo "<br><br> цикл2 index=$index";
-            $temp = get4byte(get4byte($a + (($b & $c) | (~$b & $d))) + $X[$IndexArray[0][$index]] + (1518500249));
+            $temp = get4byte(get4byte($a + (($b & $c) | (~$b & $d))) + $X[$IndexArray[0][$index]] + 1518500249);
             $a = get4byte($e);
             $e = get4byte($d);
  			$d = get4byte(($c << 10) | shift($c , 22));
             $c = get4byte($b);
             $s = get4byte((int)($ArgArray[0][$index]));
 			$b = get4byte(get4byte(($temp << $s) | shift($temp , (32 - $s))) + $a);
-            $temp = get4byte(get4byte($A + (($B &$D) | ($C & ~$D))) + $X[$IndexArray[1][$index]] + (1548603684));
+            $temp = get4byte(get4byte($A + (($B &$D) | ($C & ~$D))) + $X[$IndexArray[1][$index]] + 1548603684);
             $A = get4byte($E);
             $E = get4byte($D);
             $D =get4byte( ($C << 10) | shift($C , 22));
@@ -93,14 +93,14 @@ array(8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 
         }
         for (; $index < 48; $index++) {
 	//		echo "<br><br> цикл3 index=$index";
-            $temp = get4byte(get4byte($a + get4byte(($b | ~$c) ^ $d)) + $X[$IndexArray[0][$index]] + (1859775393));
+            $temp = get4byte(get4byte($a + get4byte(($b | ~$c) ^ $d)) + $X[$IndexArray[0][$index]] + 1859775393);
             $a = get4byte($e);
             $e =get4byte($d);
 	        $d = get4byte(($c << 10) | shift($c , 22));
             $c =get4byte($b);
             $s = get4byte($ArgArray[0][$index]);
  			$b = get4byte(get4byte(($temp << $s) | shift($temp , (32 - $s))) + $a);
-            $temp = get4byte(get4byte($A + (($B | ~$C) ^ $D)) + $X[$IndexArray[1][$index]] + (1836072691));
+            $temp = get4byte(get4byte($A + (($B | ~$C) ^ $D)) + $X[$IndexArray[1][$index]] + 1836072691);
             $A = get4byte($E);
             $E = get4byte($D);
 			$D = get4byte($C << 10) | shift($C , 22);
@@ -111,14 +111,14 @@ array(8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 
         }
        for (; $index < 64; $index++) {
 	//		echo "<br><br> цикл4 index=$index";
-            $temp = get4byte(get4byte($a + get4byte(($b & $d) | ($c & ~$d))) + $X[$IndexArray[0][$index]] + get4byte(-1894007588));
+            $temp = get4byte(get4byte($a + get4byte(($b & $d) | ($c & ~$d))) + $X[$IndexArray[0][$index]] + 2400959708);
             $a = get4byte($e);
             $e = get4byte($d);
 			$d = get4byte(($c << 10) | shift($c , 22));
             $c = get4byte($b);
             $s =get4byte($ArgArray[0][$index]);
 			$b = get4byte(get4byte(($temp << $s) | shift($temp , (32 - $s))) + $a);
-            $temp = get4byte(get4byte($A + (($B & $C) | (~$B & $D))) + $X[$IndexArray[1][$index]] + (2053994217));
+            $temp = get4byte(get4byte($A + (($B & $C) | (~$B & $D))) + $X[$IndexArray[1][$index]] + 2053994217);
             $A = get4byte($E);
             $E = get4byte($D);
 			$D = get4byte(($C << 10) | shift($C , 22));
@@ -129,7 +129,7 @@ array(8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 
         }
         for (; $index < 80; $index++) {
 	//		echo "<br><br> цикл5 index=$index";
-            $temp = get4byte(get4byte($a + get4byte($b ^ ($c | ~$d)) )+ $X[$IndexArray[0][$index]] + get4byte(-1454113458));
+            $temp = get4byte(get4byte($a + get4byte($b ^ ($c | ~$d)) )+ $X[$IndexArray[0][$index]] + 2840853838);
             $a = get4byte($e);
             $e = get4byte($d);
             $d = get4byte(($c << 10) | shift($c , 22));
@@ -188,14 +188,10 @@ array(8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6, 9, 13, 15, 7, 12, 
 	}
 	
 	function get4byte($val){
-	$a = decbin($val);
-	$a = substr($a, -32, 32);
-	return bindec($a);
+	return $val & 4294967295;
 	}
 	
 	function get1byte($val){
-	$a = decbin($val);
-	$a = substr($a, -8, 8);
-	return bindec($a);	
+	return $val&255;	
 	}
 ?>
